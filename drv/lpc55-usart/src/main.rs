@@ -16,7 +16,6 @@
 #![no_std]
 #![no_main]
 
-use drv_lpc55_gpio_api::*;
 use drv_lpc55_syscon_api::*;
 use lpc55_pac as device;
 use userlib::*;
@@ -193,33 +192,8 @@ fn turn_on_flexcomm() {
 
 fn muck_with_gpios() {
     let gpio_driver = GPIO.get_task_id();
-    let iocon = Pins::from(gpio_driver);
 
-    // Our GPIOs are P0_29 and P0_30 and need to be set to AF1
-
-    iocon
-        .iocon_configure(
-            Pin::PIO0_29,
-            AltFn::Alt1,
-            Mode::NoPull,
-            Slew::Standard,
-            Invert::Disable,
-            Digimode::Digital,
-            Opendrain::Normal,
-        )
-        .unwrap();
-
-    iocon
-        .iocon_configure(
-            Pin::PIO0_30,
-            AltFn::Alt1,
-            Mode::NoPull,
-            Slew::Standard,
-            Invert::Disable,
-            Digimode::Digital,
-            Opendrain::Normal,
-        )
-        .unwrap();
+    setup_pins(gpio_driver).unwrap();
 }
 
 fn step_transmit(
@@ -248,3 +222,5 @@ fn step_transmit(
         }
     }
 }
+
+include!(concat!(env!("OUT_DIR"), "/pin_config.rs"));
